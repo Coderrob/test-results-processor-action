@@ -1,0 +1,37 @@
+author: Coderrob
+name: Test Results Processor Action
+description: >
+  A reusable GitHub Action that processes test results, updates a summary JSON file, and generates dashboard data for visualization. 
+  Can be used to track test results over time and produce insights for GitHub Pages.
+inputs:
+  test-results:
+    description: 'The path to the test results artifact'
+    required: true
+  pages-repo:
+    description: 'The repository to update with test results. If not provided, a new repo will be created from a template.'
+    required: false
+outputs:
+  success:
+    description: 'The repository used to store the test results data'
+    value: ${{ outputs:}}
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20.x'
+    - name: Install Dependencies
+      run: npm install
+      shell: bash
+    - name: Update Summary
+      run: |
+        npx ts-node src/scripts/updateSummary.ts ${{ inputs.test-results }} summary.json
+      shell: bash
+    - name: Generate Dashboard Data
+      run: |
+        npx ts-node src/scripts/generateDashboard.ts summary.json
+      shell: bash
+branding:
+  icon: 'bar-chart'
+  color: 'blue'
